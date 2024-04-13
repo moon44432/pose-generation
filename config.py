@@ -18,5 +18,7 @@ class Config:
         self.adam_beta2 = 0.999
         self.CLIP = 1
         self.batch_size =  256
+        
+        self.pck_threshold = 0.2
 
         self.checkpoint_dir = 'checkpoints/experiment2'

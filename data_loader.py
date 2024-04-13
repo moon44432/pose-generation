@@ -34,15 +34,17 @@ class SitcomPoseDataset(Dataset):
 
         deformation_list = [item for sublist in deformation for item in sublist]
         scale_deformation_list = scale + deformation_list
-
         transformed_image = self.transform(image)
         transformed_image_crop = self.transform(image_crop)
         transformed_image_zoom = self.transform(image_zoom)
         
         one_hot_encoded_pose_cluster = torch.tensor(one_hot_encoded_pose_cluster, dtype=torch.float32)
         scale_deformation_list = torch.tensor(scale_deformation_list)
+        image_size = torch.tensor(image.size, dtype=torch.float32)
+        pose_keypoints = torch.tensor(pose_keypoints, dtype=torch.float32)
+        target_point = torch.tensor(target_point)
 
-        return transformed_image, transformed_image_crop, transformed_image_zoom, one_hot_encoded_pose_cluster, scale_deformation_list
+        return transformed_image, transformed_image_crop, transformed_image_zoom, one_hot_encoded_pose_cluster, scale_deformation_list, pose_keypoints, image_size, target_point
         
     def preprocess(self, data_list):
 
@@ -55,7 +57,7 @@ class SitcomPoseDataset(Dataset):
             cluster_keypoints = []
             for i in range(0, len(cluster_data), 2):
                 cluster_keypoints.append((cluster_data[i], cluster_data[i+1]))
-            cluster_keypoints[:-2]
+            cluster_keypoints = cluster_keypoints[:-1]
             cluster_keypoints_list.append(cluster_keypoints)
         
         annotation_list = []

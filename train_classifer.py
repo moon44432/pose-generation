@@ -27,7 +27,7 @@ def train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_dataload
     for i, batch in enumerate(train_dataloader):
 
         ## -- forward step
-        img, img_crop, img_zoom, one_hot_pose_vector, _ = batch
+        img, img_crop, img_zoom, one_hot_pose_vector, _, _, _, _ = batch
 
         # make model output - pose classification
         output = model(img.to(device), img_crop.to(device), img_zoom.to(device))
@@ -65,7 +65,7 @@ def eval_epoch(model, dataloader, criterion):
     with torch.no_grad():
         for i, batch in enumerate(dataloader):
             
-            img, img_crop, img_zoom, one_hot_pose_vector, _ = batch
+            img, img_crop, img_zoom, one_hot_pose_vector, _, _, _, _ = batch
 
             # make model output - pose classification
             output = model(img.to(device), img_crop.to(device), img_zoom.to(device))
