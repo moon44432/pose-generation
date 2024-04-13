@@ -142,7 +142,7 @@ def train():
             print(f'Validation Loss: {valid_loss:.3f}, Top Accuracy: {top_accuracy[1:]}')
 
             # validation 후 - model save
-            torch.save(model.state_dict(), f'model_{epoch}_{int(valid_loss)}_{top_accuracy[1:]}.pt')
+            torch.save(model.state_dict(), os.path.join(cfg.checkpoint_dir, f'model_{epoch}_{int(valid_loss)}_{top_accuracy[1:]}.pt'))
 
 if __name__ == '__main__':
     wandb.init(

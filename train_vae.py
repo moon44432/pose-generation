@@ -1,3 +1,4 @@
+import math
 import os
 
 import numpy as np
@@ -39,7 +40,7 @@ def train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_dataload
         loss_val = loss.item()
         losses.append(loss_val)
 
-        wandb.log({"Train Loss": loss_val})
+        wandb.log({"Train Loss": math.log10(loss_val)})
 
         ## -- optimization step
         optimizer.zero_grad()
@@ -50,7 +51,7 @@ def train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_dataload
         # optimizer - update model parameter
         optimizer.step()
         # update the learning rate
-        lr_scheduler.step()
+        # lr_scheduler.step()
 
     return np.mean(losses)
 
@@ -127,7 +128,7 @@ def train():
             print(f'Validation Loss: {valid_loss:.3f}, MSE Loss: {mse_loss:.3f}')
 
             # validation 후 - model save
-            torch.save(model.state_dict(), f'model_{epoch}_{int(valid_loss)}_{int(mse_loss)}.pt')
+            torch.save(model.state_dict(), os.path.join(cfg.checkpoint_dir, f'model_{epoch}_{int(valid_loss)}_{int(mse_loss)}.pt'))
 
 if __name__ == '__main__':
     wandb.init(

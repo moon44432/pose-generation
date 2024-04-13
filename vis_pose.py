@@ -1,4 +1,5 @@
 import os
+
 import cv2
 
 link_pairs = [[0, 1], [1, 2], [2, 6], 
