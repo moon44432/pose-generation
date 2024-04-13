@@ -94,7 +94,7 @@ def train():
 
     criterion = vae_loss
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta1, cfg.adam_beta2), weight_decay=1e-5)
-    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=300, gamma=0.05)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.05)
     num_epochs = cfg.num_epochs
 
     data_path = './affordance_data'
@@ -120,6 +120,7 @@ def train():
 
         train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
         train_loss_avg.append(train_loss)
+        lr_scheduler.step()
 
         # validation step
         if num_epochs % cfg.validation_term == 0 and num_epochs != 0:
