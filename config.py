@@ -13,7 +13,7 @@ class Config:
         self.num_epochs = 100
         self.validation_term = 1
         self.variational_beta = 0.99
-        self.learning_rate = 2e-3
+        self.learning_rate = 2e-4
         self.adam_beta1 = 0.5
         self.adam_beta2 = 0.999
         self.CLIP = 1
