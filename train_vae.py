@@ -96,8 +96,6 @@ def train():
     cfg = Config()
     model = VariationalAutoencoder(cfg).to(device)
 
-    torch.autograd.set_detect_anomaly(True)
-
     def vae_loss(recon_x, x, mu, logvar):
 
         recon_loss = F.mse_loss(recon_x.view(-1, cfg.sd_dim), x.view(-1, cfg.sd_dim), reduction='mean')
@@ -106,7 +104,7 @@ def train():
 
     criterion = vae_loss
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta1, cfg.adam_beta2), weight_decay=1e-5)
-    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.05)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=10, gamma=0.5)
     num_epochs = cfg.num_epochs
 
     data_path = './affordance_data'

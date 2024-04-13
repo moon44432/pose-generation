@@ -13,7 +13,7 @@ class Config:
         self.num_epochs = 100
         self.validation_term = 1
         self.variational_beta = 0.99
-        self.learning_rate = 2e-4
+        self.learning_rate = 2e-3
         self.adam_beta1 = 0.5
         self.adam_beta2 = 0.999
         self.CLIP = 1
@@ -21,4 +21,6 @@ class Config:
         
         self.pck_threshold = 0.2
 
-        self.checkpoint_dir = 'checkpoints/experiment2'
+        self.checkpoint_dir = 'checkpoints/experiment3'
+        if os.path.exists(self.checkpoint_dir):
+            os.mkdir(self.checkpoint_dir)
