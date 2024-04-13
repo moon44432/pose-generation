@@ -19,4 +19,4 @@ class Config:
         self.CLIP = 1
         self.batch_size =  256
 
-        self.checkpoint_dir = 'checkpoints'
+        self.checkpoint_dir = 'checkpoints/experiment2'
