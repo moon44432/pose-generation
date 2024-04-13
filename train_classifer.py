@@ -136,7 +136,6 @@ def train():
             valid_loss, top_accuracy = eval_epoch(model, test_loader, criterion)
             wandb.log({"Validation Loss": valid_loss})
             for i in range(1, 6, 1):
-                print(type(top_accuracy[i]))
                 wandb.log({f"Top-{i} Accuracy": top_accuracy[i]})
             print(f'Validation Loss: {valid_loss:.3f}, Top Accuracy: {top_accuracy[1:]}')
 
