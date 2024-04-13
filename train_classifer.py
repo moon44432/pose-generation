@@ -10,7 +10,7 @@ from config import Config
 from data_loader import SitcomPoseDataset
 from model import PoseClassifier
 
-device = 'cuda:0'
+device = 'cuda:1'
 
 def get_lr(opt):
     for param_group in opt.param_groups:
@@ -50,7 +50,6 @@ def train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_dataload
         optimizer.step()
         # update the learning rate
         lr_scheduler.step()
-        break
 
     return np.mean(losses)
 
@@ -105,7 +104,7 @@ def train():
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta2, cfg.adam_beta2), weight_decay=1e-5)
-    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=30, gamma=0.1)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=100, gamma=0.1)
     num_epochs = cfg.num_epochs
 
     data_path = './affordance_data'
