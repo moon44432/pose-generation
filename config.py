@@ -23,7 +23,7 @@ class Config:
 
 
         self.checkpoint_dir = 'checkpoints/experiment3'
-        if not os.path.exsists('checkpoints'):
+        if not os.path.exists('checkpoints'):
             os.mkdir('checkpoints')
         if not os.path.exists(self.checkpoint_dir):
             os.mkdir(self.checkpoint_dir)

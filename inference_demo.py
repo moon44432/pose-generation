@@ -97,8 +97,9 @@ def inference_demo(image_path):
     classifier = PoseClassifier(cfg)
     vae = VariationalAutoencoder(cfg)
 
-    # classifier.load_state_dict(torch.load("PATH"))
-    # vae.load_state_dict(torch.load("PATH"))
+
+    classifier.load_state_dict(torch.load("checkpoints/experiment3/model_1_2_[0.17260980606079102, 0.302325576543808, 0.410335898399353, 0.5010335445404053, 0.5736433863639832].pt"))
+    vae.load_state_dict(torch.load("checkpoints/experiment3/model_9_3929_3230.pt"))
     
     model = InferenceModule(cfg, classifier, vae)
 

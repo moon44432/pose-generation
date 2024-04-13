@@ -21,7 +21,7 @@ point_color = [(255,0,0),(0,255,0),(0,0,255),
                (128,255,0),(128,128,128),(255,128,0),
                (255,0,128),(255,255,255)]
 
-def vis_pose(image_path, pose_keypoints):
+def vis_pose(image_path, pose_keypoints, show=True):
     image = cv2.imread(image_path)
 
     for idx, pair in enumerate(link_pairs):
@@ -33,11 +33,12 @@ def vis_pose(image_path, pose_keypoints):
         else:
             cv2.circle(image, point, 20, point_color[idx], thickness=-1)
 
-    cv2.imshow("image", image)
-    cv2.moveWindow("image", 0, 0)
-    cv2.waitKey(0)
+    if show:
+        cv2.imshow("image", image)
+        cv2.moveWindow("image", 0, 0)
+        cv2.waitKey(0)
     # cv2.destroyAllWindows()
-    return
+    return image
 
 def vis_pose_data(data):
     image_dir_path = './affordance_data/data'
