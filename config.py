@@ -22,7 +22,7 @@ class Config:
         self.pck_threshold = 0.2
 
 
-        self.checkpoint_dir = 'checkpoints/experiment3'
+        self.checkpoint_dir = 'checkpoints/experiment4'
         if not os.path.exists('checkpoints'):
             os.mkdir('checkpoints')
         if not os.path.exists(self.checkpoint_dir):
