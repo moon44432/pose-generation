@@ -6,7 +6,7 @@ import torchvision.models as models
 from config import Config
 
 class AlexNetFc7(nn.Module):
-    def __init__(self):
+    def __init__(self, freeze):
         super(AlexNetFc7, self).__init__()
         model = models.alexnet(weights='IMAGENET1K_V1')
         modules = list(model.children())
@@ -14,16 +14,20 @@ class AlexNetFc7(nn.Module):
         modules[-1] = modules[-1][:-1]
 
         self.alexnet = nn.Sequential(*modules)
+        self.freeze = freeze
 
     def forward(self, x):
-        with torch.no_grad():
+        if self.freeze:
+            with torch.no_grad():
+                x = self.alexnet(x)
+        else:
             x = self.alexnet(x)
         return x
     
 class PoseClassifier(nn.Module):
     def __init__(self, cfg):
         super(PoseClassifier, self).__init__()
-        self.fc7 = AlexNetFc7()
+        self.fc7 = AlexNetFc7(cfg.backbone_freeze)
         self.fc = nn.Linear(3*cfg.alexnet_fc7_dim, cfg.pose_dim)
 
     def forward(self, x, x_crop, x_zoom):
@@ -39,7 +43,7 @@ class ConditionEncoder(nn.Module):
     def __init__(self, cfg):
         super(ConditionEncoder, self).__init__()
 
-        self.alexnet = AlexNetFc7()
+        self.alexnet = AlexNetFc7(cfg.backbone_freeze)
         self.fc1 = nn.Linear(in_features=cfg.pose_dim, out_features=cfg.fc_dim)
         self.fc2 = nn.Linear(in_features=cfg.fc_dim + 3*cfg.alexnet_fc7_dim, out_features=cfg.fc_dim)
 
