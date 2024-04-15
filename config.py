@@ -22,9 +22,9 @@ class Config:
         
         self.pck_threshold = 0.2
 
-        self.backbone_freeze = True
+        self.backbone_freeze = False
 
-        self.checkpoint_dir = 'checkpoints/experiment8'
+        self.checkpoint_dir = 'checkpoints/experiment9'
         if not os.path.exists('checkpoints'):
             os.mkdir('checkpoints')
         if not os.path.exists(self.checkpoint_dir):
