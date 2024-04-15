@@ -145,7 +145,9 @@ def train():
             torch.save(model.state_dict(), os.path.join(cfg.checkpoint_dir, f'model_{epoch}_{int(valid_loss)}_{top_accuracy[1:]}.pt'))
 
 if __name__ == '__main__':
+    experiment_config = Config()
     wandb.init(
-        project="AIKU-classifier"
+        project="AIKU-classifier",
+        config=experiment_config.__dict__
     )
     train()

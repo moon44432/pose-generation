@@ -177,7 +177,9 @@ def cal_MSE(pred, target, image_size):
     return mse
 
 if __name__ == '__main__':
+    experiment_config = Config()
     wandb.init(
-        project="AIKU-VAE"
+        project="AIKU-VAE",
+        config=experiment_config.__dict__
     )
     train()
