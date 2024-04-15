@@ -103,7 +103,7 @@ def train():
     model = PoseClassifier(cfg).to(device)
 
     criterion = torch.nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta2, cfg.adam_beta2), weight_decay=1e-5)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta2, cfg.adam_beta2), weight_decay=cfg.weight_decay)
     lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=2, gamma=0.5)
     num_epochs = cfg.num_epochs
 
@@ -131,7 +131,7 @@ def train():
         train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
         train_loss_avg.append(train_loss)
 
-        lr_scheduler.step()
+        # lr_scheduler.step()
 
         # validation step
         if num_epochs % cfg.validation_term == 0 and num_epochs != 0:

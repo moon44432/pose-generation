@@ -16,14 +16,15 @@ class Config:
         self.learning_rate = 2e-4
         self.adam_beta1 = 0.5
         self.adam_beta2 = 0.999
+        self.weight_decay = 5e-4
         self.CLIP = 1
         self.batch_size =  256
         
         self.pck_threshold = 0.2
 
-        self.backbone_freeze = True
+        self.backbone_freeze = False
 
-        self.checkpoint_dir = 'checkpoints/experiment5'
+        self.checkpoint_dir = 'checkpoints/experiment6'
         if not os.path.exists('checkpoints'):
             os.mkdir('checkpoints')
         if not os.path.exists(self.checkpoint_dir):

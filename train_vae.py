@@ -103,8 +103,8 @@ def train():
         return recon_loss + cfg.variational_beta * kldivergence, recon_loss
 
     criterion = vae_loss
-    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta1, cfg.adam_beta2), weight_decay=1e-5)
-    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.1)
+    optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta1, cfg.adam_beta2), weight_decay=cfg.weight_decay)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=5, gamma=0.2)
     num_epochs = cfg.num_epochs
 
     data_path = './affordance_data'
