@@ -104,7 +104,7 @@ def train():
 
     criterion = torch.nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta2, cfg.adam_beta2), weight_decay=cfg.weight_decay)
-    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=1, gamma=0.2)
+    lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.2)
     num_epochs = cfg.num_epochs
 
     data_path = './affordance_data'
