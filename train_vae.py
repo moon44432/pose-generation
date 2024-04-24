@@ -143,7 +143,7 @@ def train():
 
         train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
         train_loss_avg.append(train_loss)
-        lr_scheduler.step()
+        # lr_scheduler.step()
 
         # validation step
         if num_epochs % cfg.validation_term == 0 and num_epochs != 0:
