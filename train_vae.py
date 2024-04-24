@@ -84,7 +84,7 @@ def eval_epoch(model, dataloader, criterion, cluster_keypoints_list, pck_thresho
             base_pose = torch.stack([cluster_keypoints_list[value] for value in pose_cluster])
 
             generated_pose = generate_pose(base_pose, scale_deformation_recon[:, :2].to('cpu'), scale_deformation_recon[:, 2:].to('cpu'), target_point)
-            mse = cal_MSE(generated_pose, pose_keypoints, image_size)
+            mse = cal_MSE(generated_pose, pose_keypoints)
             pck = cal_PCK(generated_pose, pose_keypoints, pck_threshold)
             mse_list.append(mse)
             pck_list.append(pck)
