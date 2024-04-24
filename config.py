@@ -24,7 +24,7 @@ class Config:
 
         self.backbone_freeze = False
 
-        self.checkpoint_dir = 'checkpoints/experiment10'
+        self.checkpoint_dir = 'checkpoints/experiment11'
         if not os.path.exists('checkpoints'):
             os.mkdir('checkpoints')
         if not os.path.exists(self.checkpoint_dir):
