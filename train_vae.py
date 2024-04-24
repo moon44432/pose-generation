@@ -155,8 +155,10 @@ def train():
             torch.save(model.state_dict(), os.path.join(cfg.checkpoint_dir, f'model_{epoch}_{int(valid_loss)}_{int(mse_loss)}.pt'))
 
 def generate_pose(base_pose, scale, deformation, target_point):
-    scaled_cluster = base_pose * scale.unsqueeze(1) + target_point.unsqueeze(1)
-    generated_pose = scaled_cluster + deformation.view(-1, 16, 2)
+    scaled_cluster = base_pose * scale.unsqueeze(1)
+    center_position = torch.mean(scaled_cluster, dim=1)
+    positioned_pose = scaled_cluster + (target_point - center_position).unsqueeze(1)
+    generated_pose = positioned_pose + deformation.view(-1, 16, 2)
 
     return generated_pose
 
@@ -169,17 +171,14 @@ def cal_PCK(pred, target, threshold):
     pck = torch.mean(pck_per_batch, dim=0)
     return pck
 
-def cal_MSE(pred, target, image_size):
-    norm_pred = pred / image_size.unsqueeze(1)
-    norm_target = target / image_size.unsqueeze(1)
-
-    mse = torch.sum((norm_pred - norm_target).pow(2)) / (norm_pred.shape[0] * norm_pred.shape[1] * 2)
+def cal_MSE(pred, target):
+    mse = torch.sum((pred - target).pow(2)) / (pred.shape[0] * target.shape[1] * 2)
     return mse
 
 if __name__ == '__main__':
     experiment_config = Config()
     wandb.init(
-        project="AIKU-VAE",
+        project="AIKU-VAE2",
         config=experiment_config.__dict__
     )
     train()

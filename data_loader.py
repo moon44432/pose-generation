@@ -103,7 +103,9 @@ class SitcomPoseDataset(Dataset):
         return [s_x, s_y]
     
     def cal_deformation(self, cluster_keypoints, target_keypoints, scale, target_point):
-        scaled_cluster = [(point[0] * scale[0] + target_point[0], point[1] * scale[1] + target_point[1]) for point in cluster_keypoints]
+        scaled_cluster = [(point[0] * scale[0], point[1] * scale[1]) for point in cluster_keypoints]
+        scaled_cluster_center = (sum([x[0] for x in scaled_cluster]) / len(scaled_cluster), sum([x[1] for x in scaled_cluster]) / len(scaled_cluster))
+        scaled_cluster = [(point[0] * scale[0] + target_point[0] - scaled_cluster_center[0], point[1] * scale[1] + target_point[1] - scaled_cluster_center[1]) for point in cluster_keypoints]
         deformation = [(x[0] - y[0], x[1] - y[1]) for x, y in zip(target_keypoints, scaled_cluster)]
 
         return deformation
@@ -113,7 +115,6 @@ class SitcomPoseDataset(Dataset):
         vector[value] = 1
 
         return vector
-
 
 if __name__ == '__main__':
     data_path = './affordance_data'
