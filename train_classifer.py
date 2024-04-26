@@ -1,6 +1,7 @@
 import os
 
 import numpy as np
+from sklearn.metrics import precision_score, recall_score, f1_score, accuracy_score
 import torch
 from torch import optim
 from torch.utils.data import DataLoader
@@ -88,6 +89,8 @@ def eval_epoch(model, dataloader, criterion):
     top_accuracy = [0]
     for i in range(1, 6, 1):
         top_accuracy.append(top_k_accuracy(gt_labels[0].to(device), pred_probs[0].to(device), i))
+    
+    # precision, recall, f1, accuracy = cal_precision_recall_f1(gt_labels[0].to('cpu'), pred_probs[0].to('cpu'))
 
     return np.mean(val_losses), top_accuracy
 
@@ -98,11 +101,22 @@ def top_k_accuracy(gt_labels, predicted_probabilities, k):
     top_k_acc = correct_predictions.float().sum(1).mean().item()  # Calculate top-k accuracy
     return top_k_acc
 
+def cal_precision_recall_f1(gt_labels, predicted_probabilities):
+    gt_classes = torch.argmax(gt_labels, dim=1).view(-1)
+    pred_classes = torch.argmax(predicted_probabilities, dim=1).view(-1)
+    precision = precision_score(gt_classes, pred_classes, average=None, zero_division=np.NaN)
+    recall = recall_score(gt_classes, pred_classes, average=None)
+    f1 = f1_score(gt_classes, pred_classes, average=None, zero_division=np.NaN)
+    accuracy = accuracy_score(gt_classes, pred_classes)
+
+    return precision, recall, f1, accuracy
+
 def train():
     cfg = Config()
     model = PoseClassifier(cfg).to(device)
+    # model.load_state_dict(torch.load('checkpoints/experiment11/model_98_10_[0.1418604552745819, 0.25736433267593384, 0.3614986836910248, 0.4444444179534912, 0.5227389931678772].pt'))
 
-    criterion = torch.nn.CrossEntropyLoss()
+    criterion = torch.nn.CrossEntropyLoss(weight=torch.tensor(cfg.class_weight).to(device))
     optimizer = torch.optim.Adam(params=model.parameters(), lr=cfg.learning_rate, betas=(cfg.adam_beta2, cfg.adam_beta2), weight_decay=cfg.weight_decay)
     lr_scheduler = optim.lr_scheduler.StepLR(optimizer, step_size=3, gamma=0.2)
     num_epochs = cfg.num_epochs
@@ -131,7 +145,7 @@ def train():
         train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
         train_loss_avg.append(train_loss)
 
-        lr_scheduler.step()
+        # lr_scheduler.step()
 
         # validation step
         if num_epochs % cfg.validation_term == 0 and num_epochs != 0:
