@@ -95,7 +95,7 @@ def train():
 
     cfg = Config()
     model = VariationalAutoencoder(cfg).to(device)
-    # model.load_state_dict(torch.load('checkpoints/experiment11/model_41_1601_1170.pt'))
+    model.load_state_dict(torch.load('checkpoints/experiment12/model_63_1929_1433.pt'))
 
     def vae_loss(recon_x, x, mu, logvar):
 
@@ -142,8 +142,8 @@ def train():
         current_lr = get_lr(optimizer)
         print(f'Epoch {epoch+1}/{num_epochs}, current lr={current_lr}')
 
-        train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
-        train_loss_avg.append(train_loss)
+        # train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
+        # train_loss_avg.append(train_loss)
         # lr_scheduler.step()
 
         # validation step
@@ -156,8 +156,14 @@ def train():
             torch.save(model.state_dict(), os.path.join(cfg.checkpoint_dir, f'model_{epoch}_{int(valid_loss)}_{int(mse_loss)}.pt'))
 
 def generate_pose(base_pose, scale, deformation, target_point):
+    target_point_method = Config().target_point_method
     scaled_cluster = base_pose * scale.unsqueeze(1)
-    center_position = torch.mean(scaled_cluster, dim=1)
+    if target_point_method == 'mean':
+        center_position = torch.mean(scaled_cluster, dim=1)
+    if target_point_method == 'center':
+        max_values, _ = torch.max(scaled_cluster, dim=1)
+        min_values, _ = torch.min(scaled_cluster, dim=1)
+        center_position = torch.stack([(max_values[:, 0] - min_values[:, 0]) / 2, (max_values[:, 1] - min_values[:, 1]) / 2], dim=1)
     positioned_pose = scaled_cluster + (target_point - center_position).unsqueeze(1)
     generated_pose = positioned_pose + deformation.view(-1, 16, 2)
 
