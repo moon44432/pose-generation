@@ -6,13 +6,15 @@ from torch.utils.data import Dataset, DataLoader
 from torchvision import transforms
 
 class SitcomPoseDataset(Dataset):
-    def __init__(self, data_path, data_list):
+    def __init__(self, data_path, data_list, cfg):
 
         self.transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean = [0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
         ])
+
+        self.target_point_method = cfg.target_point_method
 
         self.data_path = data_path
         self.image_dir_path = os.path.join(self.data_path, 'data')
@@ -74,8 +76,11 @@ class SitcomPoseDataset(Dataset):
             target_point = pose_keypoints[-1]
             pose_keypoints = pose_keypoints[:-1]
 
-            # target_point recalculate (mean)
-            target_point = (sum([x[0] for x in pose_keypoints]) / len(pose_keypoints), sum([x[1] for x in pose_keypoints]) / len(pose_keypoints))
+            if self.target_point_method == 'mean':
+                target_point = (sum([x[0] for x in pose_keypoints]) / len(pose_keypoints), sum([x[1] for x in pose_keypoints]) / len(pose_keypoints))
+
+            if self.target_point_method == 'center':
+                target_point = ((max([x[0] for x in pose_keypoints]) + min([x[0] for x in pose_keypoints])) / 2, (max([x[1] for x in pose_keypoints]) + min([x[1] for x in pose_keypoints])) / 2)
 
             pose_cluster = eval(splited_data[-1]) - 1
             one_hot_encoded_pose_cluster = self.one_hot_encode(pose_cluster, len(cluster_keypoints_list))
