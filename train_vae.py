@@ -95,6 +95,7 @@ def train():
 
     cfg = Config()
     model = VariationalAutoencoder(cfg).to(device)
+    # model.load_state_dict(torch.load('checkpoints/experiment11/model_41_1601_1170.pt'))
 
     def vae_loss(recon_x, x, mu, logvar):
 
