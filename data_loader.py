@@ -71,7 +71,7 @@ class SitcomPoseDataset(Dataset):
             pose_keypoints = []
             for i in range(0, len(pose_data), 2):
                 pose_keypoints.append((pose_data[i], pose_data[i+1]))
-            target_point = pose_keypoints[-1:][0]
+            target_point = pose_keypoints[-1]
             pose_keypoints = pose_keypoints[:-1]
 
             # target_point recalculate (mean)
