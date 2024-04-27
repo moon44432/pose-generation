@@ -82,6 +82,9 @@ class SitcomPoseDataset(Dataset):
             if self.target_point_method == 'center':
                 target_point = ((max([x[0] for x in pose_keypoints]) + min([x[0] for x in pose_keypoints])) / 2, (max([x[1] for x in pose_keypoints]) + min([x[1] for x in pose_keypoints])) / 2)
 
+            if type(self.target_point_method) == int:
+                target_point = pose_keypoints[self.target_point_method]
+
             pose_cluster = eval(splited_data[-1]) - 1
             one_hot_encoded_pose_cluster = self.one_hot_encode(pose_cluster, len(cluster_keypoints_list))
             
