@@ -89,7 +89,7 @@ class SitcomPoseDataset(Dataset):
             one_hot_encoded_pose_cluster = self.one_hot_encode(pose_cluster, len(cluster_keypoints_list))
             
             scale = self.cal_scale(cluster_keypoints_list[pose_cluster], pose_keypoints)
-            deformation = self.cal_deformation(cluster_keypoints, pose_keypoints, scale, target_point)
+            deformation = self.cal_deformation(cluster_keypoints_list[pose_cluster], pose_keypoints, scale, target_point)
 
             annotation = (target_point, image_name, pose_keypoints, one_hot_encoded_pose_cluster, scale, deformation)
             annotation_list.append(annotation)
@@ -112,8 +112,16 @@ class SitcomPoseDataset(Dataset):
     
     def cal_deformation(self, cluster_keypoints, target_keypoints, scale, target_point):
         scaled_cluster = [(point[0] * scale[0], point[1] * scale[1]) for point in cluster_keypoints]
-        scaled_cluster_center = (sum([x[0] for x in scaled_cluster]) / len(scaled_cluster), sum([x[1] for x in scaled_cluster]) / len(scaled_cluster))
-        scaled_cluster = [(point[0] * scale[0] + target_point[0] - scaled_cluster_center[0], point[1] * scale[1] + target_point[1] - scaled_cluster_center[1]) for point in cluster_keypoints]
+        if self.target_point_method == 'mean':
+            target_point = (sum([x[0] for x in scaled_cluster]) / len(scaled_cluster), sum([x[1] for x in scaled_cluster]) / len(scaled_cluster))
+
+        if self.target_point_method == 'center':
+            target_point = ((max([x[0] for x in scaled_cluster]) + min([x[0] for x in scaled_cluster])) / 2, (max([x[1] for x in scaled_cluster]) + min([x[1] for x in scaled_cluster])) / 2)
+        
+        if type(self.target_point_method) == int:
+            target_point = scaled_cluster[self.target_point_method]
+        
+        scaled_cluster = [(point[0] * scale[0] + target_point[0] - scaled_cluster[0], point[1] * scale[1] + target_point[1] - scaled_cluster[1]) for point in cluster_keypoints]
         deformation = [(x[0] - y[0], x[1] - y[1]) for x, y in zip(target_keypoints, scaled_cluster)]
 
         return deformation
