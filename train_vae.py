@@ -142,8 +142,8 @@ def train():
         current_lr = get_lr(optimizer)
         print(f'Epoch {epoch+1}/{num_epochs}, current lr={current_lr}')
 
-        # train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
-        # train_loss_avg.append(train_loss)
+        train_loss = train_epoch(epoch, model, criterion, optimizer, lr_scheduler, train_loader, cfg.CLIP)
+        train_loss_avg.append(train_loss)
         # lr_scheduler.step()
 
         # validation step
