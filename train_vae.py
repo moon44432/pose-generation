@@ -164,7 +164,7 @@ def generate_pose(base_pose, scale, deformation, target_point):
     if target_point_method == 'center':
         max_values, _ = torch.max(deformed_pose, dim=1)
         min_values, _ = torch.min(deformed_pose, dim=1)
-        center_position = torch.stack([(max_values[:, 0] - min_values[:, 0]) / 2, (max_values[:, 1] - min_values[:, 1]) / 2], dim=1)
+        center_position = torch.stack([(max_values[:, 0] + min_values[:, 0]) / 2, (max_values[:, 1] + min_values[:, 1]) / 2], dim=1)
     if type(target_point_method) == int:
         center_position = deformed_pose[:, target_point_method, :]
     generated_pose = deformed_pose + (target_point - center_position).unsqueeze(1)
