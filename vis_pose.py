@@ -113,10 +113,14 @@ def vis_pose(image_path, pose_keypoints, show=True):
     cv2.destroyAllWindows()
     return image
 
-def vis_pose_coco(image_path, pose_keypoints, show=True):
+def vis_pose_coco(image_path, pose_keypoints, show=True, resized=False):
     image = cv2.imread(image_path)
 
     pose_keypoints = convert_pose(pose_keypoints)
+
+    if resized:
+        pose_keypoints, _, _, _, _ = resize_pose(pose_keypoints)
+
     for idx, pair in enumerate(coco_link_pairs):
         cv2.line(image, pose_keypoints[pair[0]], pose_keypoints[pair[1]], coco_link_color[idx], 2)
 
@@ -131,6 +135,40 @@ def vis_pose_coco(image_path, pose_keypoints, show=True):
     cv2.destroyAllWindows()
     return image
 
+def resize_pose(pose_keypoints):
+    width = 256
+    padding = 25
+    min_x = 10000
+    min_y = 10000
+    max_x = 0
+    max_y = 0
+
+    for point in pose_keypoints:
+        min_x = min(min_x, point[0])
+        min_y = min(min_y, point[1])
+        max_x = max(max_x, point[0])
+        max_y = max(max_y, point[1])
+    
+    pose_width = max_x - min_x
+    pose_height = max_y - min_y
+
+    new_keypoints = []
+
+    for point in pose_keypoints:
+        if pose_width > pose_height:
+            new_keypoints.append(
+                (int(width/2 + (point[0] - (max_x + min_x)/2) / pose_width * (width - 2*padding)),
+                int(width/2 + (point[1] - (max_y + min_y)/2) / pose_width * (width - 2*padding)))
+            )
+        else:
+            new_keypoints.append(
+                (int(width/2 + (point[0] - (max_x + min_x)/2) / pose_height * (width - 2*padding)),
+                int(width/2 + (point[1] - (max_y + min_y)/2) / pose_height * (width - 2*padding)))
+            )
+
+    return new_keypoints, min_x, min_y, pose_width, pose_height
+
+
 def vis_pose_data(data):
     image_dir_path = './affordance_data/data'
     data = data.split(' ')
@@ -143,15 +181,16 @@ def vis_pose_data(data):
         pose_keypoints.append((pose_data[i], pose_data[i+1]))
     vis_pose(image_path, pose_keypoints)
     vis_pose_coco(image_path, pose_keypoints)
+    vis_pose_coco(image_path, pose_keypoints, resized=True)
 
 if __name__ == '__main__':
     predicted = [(595.5921267553274, 404.10781700000007), (587.4540269712579, 375.26168899999993), (674.1323874006324, 382.447135), (709.0841106363025, 390.41310699999985), (738.5057531861758, 386.341047), (664.3825897951702, 417.24250400000005), (693.034285958547, 387.2644009999999), (714.1887366306264, 310.66663199999994), (711.364003176137, 296.50660700000003), (702.7690875859935, 228.0), (630.6202741684986, 387.9697880000001), (647.1081440971391, 359.6237799999999), (670.0994861445556, 309.9926839999998), (761.1125559742334, 314.1373520000001), (758.0154726576313, 389.9528070000001), (678.8184304028331, 402.0585960000001)]
     gt = [(613, 410), (603, 374), (646, 367), (671, 370), (673, 389), (630, 415), (660, 370), (672, 298), (670, 276), (665, 228), (638, 382), (631, 340), (642, 298), (703, 298), (693, 354), (640, 379)]
     predicted = [(round(x[0]), round(x[1])) for x in predicted]
 
-    vis_pose(os.path.join('./affordance_data/data', 'ELR_matches/S02/E0012.mkv/frame_00002381.jpg'), predicted + [(0, 0)])
-    vis_pose(os.path.join('./affordance_data/data', 'ELR_matches/S02/E0012.mkv/frame_00002381.jpg'), gt + [(0, 0)])
-    vis_pose_coco(os.path.join('./affordance_data/data', 'ELR_matches/S02/E0012.mkv/frame_00002381.jpg'), gt + [(0, 0)])
+    # vis_pose(os.path.join('./affordance_data/data', 'ELR_matches/S02/E0012.mkv/frame_00002381.jpg'), predicted + [(0, 0)])
+    # vis_pose(os.path.join('./affordance_data/data', 'ELR_matches/S02/E0012.mkv/frame_00002381.jpg'), gt + [(0, 0)])
+    # vis_pose_coco(os.path.join('./affordance_data/data', 'ELR_matches/S02/E0012.mkv/frame_00002381.jpg'), gt + [(0, 0)])
 
     train_data_path = './affordance_data/trainlist.txt'
     train_data = []
