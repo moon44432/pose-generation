@@ -4,6 +4,7 @@ class Config:
     def __init__(self):
         
         self.alexnet_fc7_dim = 4096
+        self.vgg16_fc_dim = 4096
         self.pose_dim = 30
 
         self.fc_dim = 512
