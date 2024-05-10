@@ -136,8 +136,8 @@ def vis_pose_coco(image_path, pose_keypoints, show=True, resized=False):
     return image
 
 def resize_pose(pose_keypoints):
-    width = 256
-    padding = 25
+    width = 200
+    padding = 10
     min_x = 10000
     min_y = 10000
     max_x = 0
@@ -157,14 +157,21 @@ def resize_pose(pose_keypoints):
     for point in pose_keypoints:
         if pose_width > pose_height:
             new_keypoints.append(
-                (int(width/2 + (point[0] - (max_x + min_x)/2) / pose_width * (width - 2*padding)),
-                int(width/2 + (point[1] - (max_y + min_y)/2) / pose_width * (width - 2*padding)))
+                (int((width/2 + (point[0] - (max_x + min_x)/2) / pose_width * (width - 2*padding))*0.9),
+                int((20 + width/2 + (point[1] - (max_y + min_y)/2) / pose_width * (width - 2*padding))*1.05))
             )
         else:
             new_keypoints.append(
-                (int(width/2 + (point[0] - (max_x + min_x)/2) / pose_height * (width - 2*padding)),
-                int(width/2 + (point[1] - (max_y + min_y)/2) / pose_height * (width - 2*padding)))
+                (int((width/2 + (point[0] - (max_x + min_x)/2) / pose_height * (width - 2*padding))*0.9),
+                int((20 + width/2 + (point[1] - (max_y + min_y)/2) / pose_height * (width - 2*padding))*1.05))
             )
+
+    keypoints_y = [i[1] for i in new_keypoints]
+    keypoints_x = [i[0] for i in new_keypoints]
+
+    
+    print('keypoints_y = "', keypoints_y, '"')
+    print('keypoints_x = "', keypoints_x, '"')
 
     return new_keypoints, min_x, min_y, pose_width, pose_height
 
