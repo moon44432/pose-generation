@@ -93,8 +93,11 @@ def convert_pose(pose):
     return coco
 
 
-def vis_pose(image_path, pose_keypoints, show=True):
+def vis_pose(image_path, pose_keypoints, show=True, resized=False):
     image = cv2.imread(image_path)
+
+    if resized:
+        pose_keypoints, _, _, _, _ = resize_pose(pose_keypoints[:-1])
 
     for idx, pair in enumerate(link_pairs):
         cv2.line(image, pose_keypoints[pair[0]], pose_keypoints[pair[1]], link_color[idx], 2)
@@ -171,7 +174,7 @@ def resize_pose(pose_keypoints):
 
     
     print('keypoints_y = "', keypoints_y, '"')
-    print('keypoints_x = "', keypoints_x, '"')
+    print('keypoints_x = "', keypoints_x, '"\n')
 
     return new_keypoints, min_x, min_y, pose_width, pose_height
 
@@ -186,7 +189,10 @@ def vis_pose_data(data):
     pose_keypoints = []
     for i in range(0, len(pose_data), 2):
         pose_keypoints.append((pose_data[i], pose_data[i+1]))
+
     vis_pose(image_path, pose_keypoints)
+    vis_pose(image_path, pose_keypoints, resized=True)
+
     vis_pose_coco(image_path, pose_keypoints)
     vis_pose_coco(image_path, pose_keypoints, resized=True)
 
