@@ -93,15 +93,14 @@ def convert_pose(pose):
     ydelta = collar_vec[0] * neck_vec[0] + collar_vec[1] * neck_vec[1]
 
     sine = collar_vec[1] / (collar_vec[0] ** 2 + collar_vec[1] ** 2) ** 0.5
-    cosine = collar_vec[0] / (collar_vec[0] ** 2 + collar_vec[1] ** 2) ** 0.5
 
     # coord of the eyes
     coco.append((int(eye_center[0] + ear_dist[0]/2.5 - xdelta / 8), int(eye_center[1] - ear_dist[0]/2.5*sine + ydelta / 400)))
     coco.append((int(eye_center[0] - ear_dist[0]/2.5 - xdelta / 8), int(eye_center[1] + ear_dist[0]/2.5*sine + ydelta / 400)))
 
     # coord of the ears
-    coco.append((int(nose[0] + ear_dist[0] - xdelta / 3), int((nose[1]*2+eye_center[1])/3 - ear_dist[0]*sine + ydelta / 300)))
-    coco.append((int(nose[0] - ear_dist[0] - xdelta / 3), int((nose[1]*2+eye_center[1])/3 + ear_dist[0]*sine + ydelta / 300)))
+    coco.append((int(nose[0] + ear_dist[0] + xdelta ** 2 / 50), int((nose[1]*2+eye_center[1])/3 - ear_dist[0]*sine + ydelta / 200)))
+    coco.append((int(nose[0] - ear_dist[0] + xdelta ** 2 / 50), int((nose[1]*2+eye_center[1])/3 + ear_dist[0]*sine + ydelta / 200)))
 
     return coco
 
@@ -174,12 +173,12 @@ def resize_pose(pose_keypoints):
         if pose_width > pose_height:
             new_keypoints.append(
                 (int((width/2 + (point[0] - (max_x + min_x)/2) / pose_width * (width - 2*padding))*0.9),
-                int((20 + width/2 + (point[1] - (max_y + min_y)/2) / pose_width * (width - 2*padding))*1.05))
+                int((20 + width/2 + (point[1] - (max_y + min_y)/2) / pose_width * (width - 2*padding))*1.1))
             )
         else:
             new_keypoints.append(
                 (int((width/2 + (point[0] - (max_x + min_x)/2) / pose_height * (width - 2*padding))*0.9),
-                int((20 + width/2 + (point[1] - (max_y + min_y)/2) / pose_height * (width - 2*padding))*1.05))
+                int((20 + width/2 + (point[1] - (max_y + min_y)/2) / pose_height * (width - 2*padding))*1.1))
             )
 
     keypoints_y = [i[1] for i in new_keypoints]
@@ -223,5 +222,5 @@ if __name__ == '__main__':
     with open(train_data_path, 'r') as f:
         train_data = list(f.readlines())
 
-    for data in train_data:
+    for data in train_data[1000:]:
         vis_pose_data(data)
