@@ -62,13 +62,14 @@ coco:
 '''
 
 def convert_pose(pose):
-    def get_length(p1, p2):
-        return ((p1[0] - p2[0])**2 + (p1[1] - p2[1])**2)**0.5
-
     coco = []
     
+    # coord of nose
     nose = ((pose[9][0] + pose[8][0]) // 2, (pose[9][1] + pose[8][1]) // 2)
-    eye_center = ((pose[9][0] * 6 + pose[8][0] * 4) // 10, (pose[9][1] * 6 + pose[8][1] * 4) // 10)
+
+    # coord of the center of the eyes
+    eye_center = ((nose[0] * 3 + pose[9][0] * 1) // 4, (nose[1] * 3 + pose[9][1] * 1) // 4)
+
     coco.append(nose)
     coco.append(pose[7])
     coco += reversed(pose[10:13])
@@ -76,19 +77,31 @@ def convert_pose(pose):
     coco += reversed(pose[0:3])
     coco += pose[3:6]
 
-    ear_dist = ((coco[2][0] - coco[5][0]) // 4, (coco[2][1] - coco[5][1]) // 4)
+    # x, y distance between the ears
+    ear_dist = ((coco[2][0] - coco[5][0]) / 3.5, (coco[2][1] - coco[5][1]) // 3.5)
 
+    # xdelta represents how much a person turned their body
     xdelta = (coco[0][0] - coco[1][0]) - (coco[1][0] - (coco[11][0] + coco[8][0]) // 2) // 10
 
+    # collar bone vector
     collar_vec = (coco[2][0] - coco[1][0], coco[2][1] - coco[1][1])
+    # neck vector
     neck_vec = (coco[0][0] - coco[1][0], coco[0][1] - coco[1][1])
 
+    # inner prod of collar bone vector and neck vector
+    # which represents how much a person lowered their head
     ydelta = collar_vec[0] * neck_vec[0] + collar_vec[1] * neck_vec[1]
 
-    coco.append(((eye_center[0] + ear_dist[0] // 3 - xdelta // 3), (eye_center[1] + ear_dist[1] // 3 - ydelta // 100)))
-    coco.append(((eye_center[0] - ear_dist[0] // 3 - xdelta // 3), (eye_center[1] - ear_dist[1] // 3 - ydelta // 100)))
-    coco.append(((coco[0][0] + ear_dist[0] - xdelta // 2), (coco[0][1] + ear_dist[1] - ydelta // 150)))
-    coco.append(((coco[0][0] - ear_dist[0] - xdelta // 2), (coco[0][1] - ear_dist[1] - ydelta // 150)))
+    sine = collar_vec[1] / (collar_vec[0] ** 2 + collar_vec[1] ** 2) ** 0.5
+    cosine = collar_vec[0] / (collar_vec[0] ** 2 + collar_vec[1] ** 2) ** 0.5
+
+    # coord of the eyes
+    coco.append((int(eye_center[0] + ear_dist[0]/2.5 - xdelta / 8), int(eye_center[1] - ear_dist[0]/2.5*sine + ydelta / 400)))
+    coco.append((int(eye_center[0] - ear_dist[0]/2.5 - xdelta / 8), int(eye_center[1] + ear_dist[0]/2.5*sine + ydelta / 400)))
+
+    # coord of the ears
+    coco.append((int(nose[0] + ear_dist[0] - xdelta / 3), int((nose[1]*2+eye_center[1])/3 - ear_dist[0]*sine + ydelta / 300)))
+    coco.append((int(nose[0] - ear_dist[0] - xdelta / 3), int((nose[1]*2+eye_center[1])/3 + ear_dist[0]*sine + ydelta / 300)))
 
     return coco
 
@@ -113,7 +126,7 @@ def vis_pose(image_path, pose_keypoints, show=True, resized=False):
         cv2.imshow("image", image)
         cv2.moveWindow("image", 0, 0)
         cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
     return image
 
 def vis_pose_coco(image_path, pose_keypoints, show=True, resized=False):
@@ -135,7 +148,7 @@ def vis_pose_coco(image_path, pose_keypoints, show=True, resized=False):
         cv2.imshow("image", image)
         cv2.moveWindow("image", 0, 0)
         cv2.waitKey(0)
-    cv2.destroyAllWindows()
+        cv2.destroyAllWindows()
     return image
 
 def resize_pose(pose_keypoints):
